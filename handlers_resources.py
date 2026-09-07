@@ -19,7 +19,7 @@ async def list_audiences(params: ListAudienceParams, ctx) -> ActionResult:
             rid = str(r.get("id") or r.get("key") or r.get("uuid") or "unknown")
             rname = r.get("name") or r.get("title") or r.get("label") or rid
             items.append({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r})
-        return ActionResult.ok({"audiences": items, "total": len(items)}, summary=f"Found {len(items)} audiences.")
+        return ActionResult.success({"audiences": items, "total": len(items)}, summary=f"Found {len(items)} audiences.")
     except Exception as e:
         return ActionResult.error(f"Error listing audiences: {e}")
 
@@ -30,7 +30,7 @@ async def get_audience(params: GetAudienceParams, ctx) -> ActionResult:
         r = await client.get_audience(params.audience_id)
         rid = str(r.get("id") or params.audience_id)
         rname = r.get("name") or r.get("title") or rid
-        return ActionResult.ok({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r}, summary=f"Retrieved Audience {rid}.")
+        return ActionResult.success({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r}, summary=f"Retrieved Audience {rid}.")
     except Exception as e:
         return ActionResult.error(f"Error retrieving Audience: {e}")
 
@@ -39,7 +39,7 @@ async def audit_audience_health(params: ConnectionIdParams, ctx) -> ActionResult
     client = await resolve_client(ctx, params.connection_id)
     try:
         items = await client.list_audiences(limit=50)
-        return ActionResult.ok({
+        return ActionResult.success({
             "healthy": True,
             "total_audiences": len(items),
             "details": {"sample_count": len(items)},
