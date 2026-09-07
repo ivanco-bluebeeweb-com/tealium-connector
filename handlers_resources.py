@@ -10,7 +10,7 @@ from schemas import (
 from handlers_connection import resolve_client
 
 @chat.function("list_audiences", "List audiences in Tealium.", action_type="read", chain_callable=True, event="tealium-connector.list_audiences", effects=["read:audiences"], data_model=AudienceList)
-async def list_audiences(params: ListAudienceParams, ctx) -> ActionResult:
+async def list_audiences(ctx, params: ListAudienceParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         raw_items = await client.list_audiences(limit=params.limit)
@@ -24,7 +24,7 @@ async def list_audiences(params: ListAudienceParams, ctx) -> ActionResult:
         return ActionResult.error(f"Error listing audiences: {e}")
 
 @chat.function("get_audience", "Get details of one Audience in Tealium.", action_type="read", chain_callable=True, event="tealium-connector.get_audience", effects=["read:audience"], data_model=AudienceRecord)
-async def get_audience(params: GetAudienceParams, ctx) -> ActionResult:
+async def get_audience(ctx, params: GetAudienceParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         r = await client.get_audience(params.audience_id)
@@ -35,7 +35,7 @@ async def get_audience(params: GetAudienceParams, ctx) -> ActionResult:
         return ActionResult.error(f"Error retrieving Audience: {e}")
 
 @chat.function("audit_audience_health", "Audit health of Tealium audiences and connectivity.", action_type="read", chain_callable=True, event="tealium-connector.audit_audience_health", effects=["read:audit"], data_model=AuditHealthReport)
-async def audit_audience_health(params: ConnectionIdParams, ctx) -> ActionResult:
+async def audit_audience_health(ctx, params: ConnectionIdParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         items = await client.list_audiences(limit=50)
